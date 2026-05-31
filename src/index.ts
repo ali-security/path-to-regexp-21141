@@ -502,9 +502,13 @@ export function pathToRegexp(
   const items = paths.map((path) =>
     path instanceof TokenData ? path : parse(path, options),
   );
+  let combinations = 0;
 
   for (const { tokens } of items) {
     for (const seq of flatten(tokens, 0, [])) {
+      if (combinations++ >= 256) {
+        throw new TypeError("Too many path combinations");
+      }
       const regexp = sequenceToRegExp(seq, delimiter, keys);
       sources.push(regexp);
     }
